@@ -9,14 +9,8 @@
  */
 
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Routes} from './src/routes';
 
-const App = () => {
-  return (
-    <View>
-      <Text>Hello Archimou</Text>
-    </View>
-  );
-};
+const App = () => <Routes />;
 
 export default App;
