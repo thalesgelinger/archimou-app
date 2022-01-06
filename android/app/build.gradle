@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: 'com.google.gms.google-services'
 
 import com.android.build.OutputFile
 
@@ -54,7 +55,7 @@ import com.android.build.OutputFile
  *   // where to put the JS bundle asset in release mode
  *   jsBundleDirRelease: "$buildDir/intermediates/assets/release",
  *
- *   // where to put drawable resources / React Native assets, e.g. the ones you use via
+ *   // where to put drawable resourc`es / React Native assets, e.g. the ones you use via
  *   // require('./image.png')), in debug mode
  *   resourcesDirDebug: "$buildDir/intermediates/res/merged/debug",
  *
@@ -131,7 +132,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.archimou_app"
+        applicationId "com.archimou.app.social.tree"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -190,6 +191,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
+    implementation 'com.google.firebase:firebase-analytics'
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 

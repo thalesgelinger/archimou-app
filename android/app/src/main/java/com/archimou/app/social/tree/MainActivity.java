@@ -1,4 +1,4 @@
-package com.archimou_app;
+package com.archimou.app.social.tree;
 
 import com.facebook.react.ReactActivity;
 

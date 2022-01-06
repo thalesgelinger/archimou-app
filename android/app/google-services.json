@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "437644277626",
+    "project_id": "archimou-app-id",
+    "storage_bucket": "archimou-app-id.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437644277626:android:0a6960a9521713c2ba48c3",
+        "android_client_info": {
+          "package_name": "com.archimou.app.social.tree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "437644277626-qdajb41ed8mdm7k4grrs2floif4u3o77.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.archimou.app.social.tree",
+            "certificate_hash": "b0b8ad1aa03fbbcf9c8c63449375ecdc1bedf373"
+          }
+        },
+        {
+          "client_id": "437644277626-tu49omc55nb6afuvr390imjso04fb2rg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.archimou.app.social.tree",
+            "certificate_hash": "89830d1509e73daccf2219819674e60cd5da2936"
+          }
+        },
+        {
+          "client_id": "437644277626-de2r7g1jttpmls7mc2481ghobt3iq0eb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBq5MgHJvMCkuc0iDo8y_de82abF1scPJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "437644277626-de2r7g1jttpmls7mc2481ghobt3iq0eb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
