@@ -1,0 +1,98 @@
+[
+    {
+        "id": 1,
+        "name": "Jose",
+        "gender": "M",
+        "parents": [3, 4],
+        "children": [6, 7],
+        "partner": 2
+    },
+    {
+        "id": 2,
+        "name": "Antonia",
+        "gender": "F",
+        "parents": null,
+        "children": [6,7],
+        "partner": 1
+    },
+    {
+        "id": 3,
+        "name": "Maria",
+        "gender": "F",
+        "parents": null,
+        "children": [1,5],
+        "partner": 4
+    },
+    {
+        "id": 4,
+        "name": "Joao",
+        "gender": "M",
+        "parents": [8],
+        "children": [1,5],
+        "partner": 3
+    },
+    {
+        "id": 5,
+        "name": "Zé neto",
+        "gender": "M",
+        "parents": [3,4],
+        "children": null,
+        "partner": null
+    },
+    {
+        "id": 6,
+        "name": "Amanda",
+        "gender": "F",
+        "parents": [1,2],
+        "children": null,
+        "partner": null
+    },
+    {
+        "id": 7,
+        "name": "Cintia",
+        "gender": "F",
+        "parents": [1,2],
+        "children": null,
+        "partner": null
+    },
+    {
+        "id": 9,
+        "name": "Matheus",
+        "gender": "M",
+        "parents": [1,2],
+        "children": null,
+        "partner": null
+    },
+    {
+        "id": 10,
+        "name": "Lucas",
+        "gender": "M",
+        "parents": [1,2],
+        "children": null,
+        "partner": null
+    },
+    {
+        "id": 11,
+        "name": "Regina",
+        "gender": "F",
+        "parents": [1,2],
+        "children": null,
+        "partner": null
+    },
+    {
+        "id": 12,
+        "name": "Antonieta",
+        "gender": "F",
+        "parents": [1,2],
+        "children": null,
+        "partner": null
+    },
+    {
+        "id": 8,
+        "name": "Ptolomeu",
+        "gender": "M",
+        "parents": null,
+        "children": [4],
+        "partner": null
+    }
+]
