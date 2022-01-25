@@ -1,26 +1,36 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Pressable, PressableProps} from 'react-native';
 
 const ITEM_SIZE = 100;
 
-export function Node({name, x, y}) {
+interface Props extends PressableProps {
+  name: string;
+  x: number;
+  y: number;
+  gender: string;
+}
+
+export function Node({name, x, y, gender, ...rest}: Props) {
+  const backgroundColor = gender === 'M' ? '#0400ff' : '#ff00d4';
+
   return (
-    <View
-      style={
-        {
-          height: ITEM_SIZE,
-          width: ITEM_SIZE,
-          backgroundColor: 'rgba(255,255,255, 0.5)',
-          position: 'absolute',
-          translateX: x,
-          translateY: y,
-          borderRadius: ITEM_SIZE / 2,
-          zIndex: 5,
-          justifyContent: 'center',
-          alignItems: 'center',
-        } as StyleSheet.NamedStyles<{}>
-      }>
-      <Text>{name}</Text>
-    </View>
+    <Pressable style={{zIndex: 5}} {...rest}>
+      <View
+        style={
+          {
+            height: ITEM_SIZE,
+            width: ITEM_SIZE,
+            backgroundColor,
+            position: 'absolute',
+            translateX: x,
+            translateY: y,
+            borderRadius: ITEM_SIZE / 2,
+            justifyContent: 'center',
+            alignItems: 'center',
+          } as StyleSheet.NamedStyles<{}>
+        }>
+        <Text>{name}</Text>
+      </View>
+    </Pressable>
   );
 }

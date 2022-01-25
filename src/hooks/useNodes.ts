@@ -26,14 +26,27 @@ interface Line {
 }
 
 export const useNodes = () => {
+  const [mainNode, setMainNode] = useState<Node>({} as Node);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [lines, setLines] = useState<Line[]>([]);
   const {height} = Dimensions.get('window');
 
   useEffect(() => {
     const mainNode = getMainNodePosition();
-    distributeNodes(mainNode);
+    setMainNode(mainNode);
+    setNodes([mainNode]);
+    // distributeNodes(mainNode);
   }, []);
+
+  useEffect(() => {
+    if (!!nodes.length) {
+      const nodesToConsider = [...nodes].splice(2);
+      const relationLinesMainNode = getRelationsLinesFromNode(mainNode, [
+        ...nodesToConsider,
+      ]);
+      setLines([...relationLinesMainNode]);
+    }
+  }, [nodes]);
 
   function getMainNodePosition() {
     const node = {
@@ -51,18 +64,12 @@ export const useNodes = () => {
     // const siblingsNodes = getSiblingsNode(node);
 
     setNodes([
-      node,
+      mainNode,
       partnerNode,
       ...parentsNodes,
       ...childrenNodes,
       // ...siblingsNodes
     ]);
-    const relationLinesMainNode = getRelationsLinesFromNode(node, [
-      ...parentsNodes,
-      ...childrenNodes,
-    ]);
-
-    setLines([...relationLinesMainNode]);
   }
 
   function getPartnerNode(node: Node) {
@@ -149,5 +156,5 @@ export const useNodes = () => {
     return num % 2 === 0;
   }
 
-  return {nodes, lines};
+  return {nodes, lines, distributeNodes};
 };

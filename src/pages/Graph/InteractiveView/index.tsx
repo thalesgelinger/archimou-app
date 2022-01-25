@@ -18,7 +18,6 @@ export const InteractiveView = forwardRef(
   ({children, size}: {children: ReactNode}, ref) => {
     const pan = useRef(new Animated.ValueXY()).current;
     const scale = new Animated.Value(1);
-    const {width, height} = Dimensions.get('window');
 
     const panResponder = useRef(
       PanResponder.create({
@@ -58,7 +57,7 @@ export const InteractiveView = forwardRef(
             style={
               {
                 transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}],
-                backgroundColor: 'red',
+                backgroundColor: 'white',
                 width: size,
                 height: size,
               } as StyleSheet.NamedStyles<{}>
