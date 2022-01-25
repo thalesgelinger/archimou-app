@@ -1,7 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, Text, View} from 'react-native';
+import Svg, {Line} from 'react-native-svg';
 import graph from '../../../mocks/family_tree.json';
-import {Line, Node} from '../../components';
+import {Node} from '../../components';
 import {useNodes} from '../../hooks/useNodes';
 import {InteractiveView} from './InteractiveView';
 
@@ -24,9 +25,18 @@ export function Graph() {
       {nodes.map(({x, y, name}) => (
         <Node key={name} x={x} y={y} name={name} />
       ))}
-      {lines.map(({from, to}) => (
-        <Line from={from} to={to} />
-      ))}
+      <Svg height={height * 2} width={height * 2}>
+        {lines.map(({from, to}, index) => {
+          const x1 = from.x + ITEM_SIZE / 2;
+          const y1 = from.y + ITEM_SIZE / 2;
+          const x2 = to.x + ITEM_SIZE / 2;
+          const y2 = to.y + ITEM_SIZE / 2;
+          const points = {x1, y1, x2, y2};
+          return (
+            <Line {...points} key={index} stroke="black" strokeWidth="2" />
+          );
+        })}
+      </Svg>
     </InteractiveView>
   );
 }
