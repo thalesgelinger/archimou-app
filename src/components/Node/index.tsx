@@ -1,4 +1,4 @@
-import {MotiView} from 'moti';
+import {MotiView, useAnimationState} from 'moti';
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Pressable, PressableProps} from 'react-native';
 
@@ -8,10 +8,12 @@ interface Props extends PressableProps {
   name: string;
   x: number;
   y: number;
+  originX: number;
+  originY: number;
   gender: string;
 }
 
-export function Node({name, x, y, gender, ...rest}: Props) {
+export function Node({name, x, y, gender, originX, originY, ...rest}: Props) {
   const backgroundColor = gender === 'M' ? '#0400ff' : '#ff00d4';
 
   return (
@@ -27,17 +29,23 @@ export function Node({name, x, y, gender, ...rest}: Props) {
           alignItems: 'center',
         }}
         from={{
-          transform: [{translateX: x}, {translateY: y}, {scale: 1}],
-          // opacity: 0,
+          transform: [{translateX: originX ?? x}, {translateY: originY ?? y}],
+          scale: 1,
+          opacity: 0,
         }}
         animate={{
-          transform: [{translateX: x}, {translateY: y}, {scale: 1.05}],
+          transform: [{translateX: x}, {translateY: y}],
+          scale: 1.05,
           opacity: 1,
         }}
         transition={{
           type: 'timing',
-          duration: 1000,
-          loop: true,
+          duration: 1500,
+          scale: {loop: true},
+          opacity: {
+            type: 'timing',
+            delay: 200,
+          },
         }}>
         <Text>{name}</Text>
       </MotiView>

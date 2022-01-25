@@ -1,4 +1,4 @@
-export interface Node {
+export interface NodeType {
   id: number;
   name: string;
   position: {

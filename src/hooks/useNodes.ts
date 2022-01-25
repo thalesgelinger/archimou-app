@@ -13,6 +13,8 @@ interface Node {
   partner: number;
   x: number;
   y: number;
+  originX?: number;
+  originY?: number;
 }
 
 interface Point {
@@ -78,6 +80,8 @@ export const useNodes = () => {
       ...partner,
       x: node.x + ITEM_SIZE,
       y: node.y,
+      originX: node.x,
+      originY: node.y,
     } as Node;
     return partnerNode;
   }
@@ -99,6 +103,8 @@ export const useNodes = () => {
         ...parent,
         y: node.y - ITEM_SIZE * 2,
         x: gendersPosition[parent.gender],
+        originX: node.x,
+        originY: node.y,
       };
     });
 
@@ -128,6 +134,8 @@ export const useNodes = () => {
         ...child,
         y,
         x,
+        originX: node.x,
+        originY: node.y,
       };
     });
 

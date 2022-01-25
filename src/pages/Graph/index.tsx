@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, Text, View} from 'react-native';
 import Svg, {Line} from 'react-native-svg';
 import graph from '../../../mocks/family_tree.json';
-import {Node as NodeType} from '../../@types';
+import {NodeType} from '../../@types';
 import {Node} from '../../components';
 import {useNodes} from '../../hooks/useNodes';
 import {InteractiveView} from './InteractiveView';

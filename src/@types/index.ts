@@ -1,2 +1,2 @@
-export type {Node} from './node';
+export type {NodeType} from './node';
 export type {Person} from './person';
