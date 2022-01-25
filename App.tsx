@@ -12,6 +12,7 @@ import React from 'react';
 import AuthProvider from './src/context/auth';
 import {Routes} from './src/routes';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import 'react-native-reanimated';
 
 GoogleSignin.configure({
   webClientId:

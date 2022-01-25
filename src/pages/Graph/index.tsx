@@ -1,3 +1,4 @@
+import {MotiView} from 'moti';
 import React, {useEffect, useRef, useState} from 'react';
 import {Dimensions, Text, View} from 'react-native';
 import Svg, {Line} from 'react-native-svg';

@@ -1,4 +1,5 @@
-import React from 'react';
+import {MotiView} from 'moti';
+import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Pressable, PressableProps} from 'react-native';
 
 const ITEM_SIZE = 100;
@@ -15,22 +16,31 @@ export function Node({name, x, y, gender, ...rest}: Props) {
 
   return (
     <Pressable style={{zIndex: 5}} {...rest}>
-      <View
-        style={
-          {
-            height: ITEM_SIZE,
-            width: ITEM_SIZE,
-            backgroundColor,
-            position: 'absolute',
-            translateX: x,
-            translateY: y,
-            borderRadius: ITEM_SIZE / 2,
-            justifyContent: 'center',
-            alignItems: 'center',
-          } as StyleSheet.NamedStyles<{}>
-        }>
+      <MotiView
+        style={{
+          height: ITEM_SIZE,
+          width: ITEM_SIZE,
+          backgroundColor,
+          position: 'absolute',
+          borderRadius: ITEM_SIZE / 2,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        from={{
+          transform: [{translateX: x}, {translateY: y}, {scale: 1}],
+          // opacity: 0,
+        }}
+        animate={{
+          transform: [{translateX: x}, {translateY: y}, {scale: 1.05}],
+          opacity: 1,
+        }}
+        transition={{
+          type: 'timing',
+          duration: 1000,
+          loop: true,
+        }}>
         <Text>{name}</Text>
-      </View>
+      </MotiView>
     </Pressable>
   );
 }
