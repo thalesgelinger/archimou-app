@@ -5,10 +5,9 @@ import Svg, {Line} from 'react-native-svg';
 import graph from '../../../mocks/family_tree.json';
 import {NodeType} from '../../@types';
 import {Node} from '../../components';
+import {ConnectionLine} from '../../components/ConnectionLine';
 import {useNodes} from '../../hooks/useNodes';
 import {InteractiveView} from './InteractiveView';
-
-const ITEM_SIZE = 100;
 
 export function Graph() {
   const interactiveViewRef = useRef();
@@ -39,16 +38,9 @@ export function Graph() {
         />
       ))}
       <Svg height={height * 2} width={height * 2}>
-        {lines.map(({from, to}, index) => {
-          const x1 = from.x + ITEM_SIZE / 2;
-          const y1 = from.y + ITEM_SIZE / 2;
-          const x2 = to.x + ITEM_SIZE / 2;
-          const y2 = to.y + ITEM_SIZE / 2;
-          const points = {x1, y1, x2, y2};
-          return (
-            <Line {...points} key={index} stroke="black" strokeWidth="2" />
-          );
-        })}
+        {lines.map((line, index) => (
+          <ConnectionLine key={index} {...line} />
+        ))}
       </Svg>
     </InteractiveView>
   );

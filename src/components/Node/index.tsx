@@ -47,7 +47,7 @@ export function Node({name, x, y, gender, originX, originY, ...rest}: Props) {
             delay: 200,
           },
         }}>
-        <Text>{name}</Text>
+        <Text style={{color: 'white'}}>{name}</Text>
       </MotiView>
     </Pressable>
   );
