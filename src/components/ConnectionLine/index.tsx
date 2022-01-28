@@ -34,7 +34,7 @@ export function ConnectionLine({from, to}) {
       y1={y1}
       x2={x2}
       y2={y2}
-      stroke="rgba(0,0,0,0.8)"
+      stroke="#7E7A82"
       strokeWidth="2"
     />
   );

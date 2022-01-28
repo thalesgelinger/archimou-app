@@ -1,11 +1,9 @@
-import {MotiView} from 'moti';
-import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, Text, View} from 'react-native';
-import Svg, {Line} from 'react-native-svg';
-import graph from '../../../mocks/family_tree.json';
+import React, {useEffect, useRef} from 'react';
+import {Dimensions} from 'react-native';
+import Svg from 'react-native-svg';
 import {NodeType} from '../../@types';
-import {Node} from '../../components';
-import {ConnectionLine} from '../../components/ConnectionLine';
+import {Node} from '..';
+import {ConnectionLine} from '../ConnectionLine';
 import {useNodes} from '../../hooks/useNodes';
 import {InteractiveView} from './InteractiveView';
 

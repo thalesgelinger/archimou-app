@@ -7,9 +7,9 @@ import React, {
 } from 'react';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {api} from '../services/api';
+
 interface AuthContextData {
-  user: any;
+  idToken: string | null;
   googleSignIn: () => void;
   signOut: () => void;
 }
@@ -21,15 +21,15 @@ interface AuthProviderProps {
 }
 
 const AuthProvider = ({children}: AuthProviderProps) => {
-  const [user, setUser] = useState({});
+  const [idToken, setIdToken] = useState<string | null>('');
 
   const googleSignIn = async () => {
     try {
       const {idToken, user} = await GoogleSignin.signIn();
-      console.log({user});
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const response = await auth().signInWithCredential(googleCredential);
-      console.log({response});
+      setIdToken(idToken);
+      //TODO :: call another page to register new user
     } catch (e) {
       console.error(e);
     }
@@ -40,7 +40,7 @@ const AuthProvider = ({children}: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{user, googleSignIn, signOut}}>
+    <AuthContext.Provider value={{idToken, googleSignIn, signOut}}>
       {children}
     </AuthContext.Provider>
   );

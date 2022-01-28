@@ -11,7 +11,7 @@ export const Stacks = () => {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="Tree" component={Home} />
+      <Stack.Screen name="Graph" component={Home} />
     </Stack.Navigator>
   );
 };

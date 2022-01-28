@@ -14,7 +14,7 @@ interface Props extends PressableProps {
 }
 
 export function Node({name, x, y, gender, originX, originY, ...rest}: Props) {
-  const backgroundColor = gender === 'M' ? '#0400ff' : '#ff00d4';
+  const backgroundColor = gender === 'M' ? '#657AE8' : '#E865E3';
 
   return (
     <Pressable style={{zIndex: 5}} {...rest}>

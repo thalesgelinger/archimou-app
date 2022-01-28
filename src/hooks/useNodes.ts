@@ -37,7 +37,6 @@ export const useNodes = () => {
     const mainNode = getMainNodePosition();
     setMainNode(mainNode);
     setNodes([mainNode]);
-    // distributeNodes(mainNode);
   }, []);
 
   useEffect(() => {
