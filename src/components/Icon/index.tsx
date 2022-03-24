@@ -1,10 +1,10 @@
 import React from 'react';
 import {SvgProps} from 'react-native-svg';
 
-import icons from './iconPack';
+import {icons} from './iconPack';
 
 export interface IconProps extends SvgProps {
-  name: string;
+  name: keyof typeof icons;
   size: number;
   color: string;
 }

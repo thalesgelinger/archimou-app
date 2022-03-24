@@ -1,33 +1,48 @@
-import {MotiView} from 'moti';
-import React from 'react';
-import {Text, Pressable, PressableProps} from 'react-native';
-import {Icon} from '../Icon';
+import {MotiView, useAnimationState} from 'moti';
+import React, {useEffect, useState} from 'react';
+import {TouchableOpacityProps} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  PressableProps,
+  ColorValue,
+  TouchableOpacity,
+} from 'react-native';
+import {IconProps} from '../Icon';
 
 const ITEM_SIZE = 100;
 
-interface Props extends PressableProps {
-  name: string;
+interface Props extends TouchableOpacityProps {
   x: number;
   y: number;
   originX: number;
   originY: number;
-  gender: string;
+  color: ColorValue;
 }
 
-export function Node({name, x, y, gender, originX, originY, ...rest}: Props) {
-  const backgroundColor = gender === 'M' ? '#657AE8' : '#E865E3';
-
+export function GraphButton({
+  x,
+  y,
+  originX,
+  originY,
+  color,
+  children,
+  ...rest
+}: Props) {
   return (
-    <Pressable style={{zIndex: 5}} {...rest}>
+    <TouchableOpacity style={{zIndex: 5}} {...rest}>
       <MotiView
         style={{
           height: ITEM_SIZE,
           width: ITEM_SIZE,
-          // backgroundColor,
+          backgroundColor: color,
           position: 'absolute',
           borderRadius: ITEM_SIZE / 2,
           justifyContent: 'center',
           alignItems: 'center',
+          zIndex: 100,
         }}
         from={{
           transform: [{translateX: originX ?? x}, {translateY: originY ?? y}],
@@ -48,9 +63,8 @@ export function Node({name, x, y, gender, originX, originY, ...rest}: Props) {
             delay: 200,
           },
         }}>
-        <Icon name="user" color={backgroundColor} size={ITEM_SIZE} />
-        <Text style={{color: backgroundColor, fontWeight: 'bold'}}>{name}</Text>
+        {children}
       </MotiView>
-    </Pressable>
+    </TouchableOpacity>
   );
 }

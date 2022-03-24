@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import {Dock, Graph} from '../../components';
+import {Dock} from '../../components';
+import {Graph} from '../../components/Graph';
 
 export const Home = () => {
   return (

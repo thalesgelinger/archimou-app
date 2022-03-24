@@ -1,21 +1,9 @@
-import React, {
-  forwardRef,
-  ReactNode,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from 'react';
-import {
-  Animated,
-  Dimensions,
-  PanResponder,
-  SafeAreaView,
-  StyleSheet,
-} from 'react-native';
+import React, {forwardRef, ReactNode, useImperativeHandle, useRef} from 'react';
+import {Animated, PanResponder, SafeAreaView, StyleSheet} from 'react-native';
 import {PinchGestureHandler} from 'react-native-gesture-handler';
 
 export const InteractiveView = forwardRef(
-  ({children, size}: {children: ReactNode}, ref) => {
+  ({children, size, onMoving}: {children: ReactNode}, ref) => {
     const pan = useRef(new Animated.ValueXY()).current;
     const scale = new Animated.Value(1);
 
@@ -23,6 +11,7 @@ export const InteractiveView = forwardRef(
       PanResponder.create({
         onMoveShouldSetPanResponder: () => true,
         onPanResponderGrant: () => {
+          onMoving(true);
           pan.setOffset({
             x: pan.x._value,
             y: pan.y._value,
@@ -31,6 +20,9 @@ export const InteractiveView = forwardRef(
         onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
         onPanResponderRelease: (_, gesture) => {
           pan.flattenOffset();
+        },
+        onPanResponderEnd: () => {
+          onMoving(false);
         },
       }),
     ).current;

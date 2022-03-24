@@ -7,6 +7,8 @@ export const InputContainer = styled.View`
   border-radius: 8px;
   width: 100%;
   justify-content: space-between;
+  align-items: center;
+  padding: 0 5px;
 `;
 
 export const Input = styled.TextInput.attrs({

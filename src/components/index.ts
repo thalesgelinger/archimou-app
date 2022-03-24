@@ -6,3 +6,6 @@ export {Dock} from './Dock';
 export {Icon} from './Icon';
 export {InputText} from './InputText';
 export {DropDown} from './DropDown';
+export {BackButton} from './BackButton';
+export {EditButton} from './EditButton';
+export {GraphButton} from './GraphButton';

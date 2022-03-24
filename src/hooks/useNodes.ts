@@ -1,47 +1,67 @@
+import {RootState} from './../store/store';
+import {useSelector} from 'react-redux';
+import {api} from './../services/api';
 import {Dimensions} from 'react-native';
 import {useState, useEffect} from 'react';
-import graph from '../../mocks/family_tree.json';
+import {Storage} from '../services/Storage';
+import {useTreeActions} from './useTreeActions';
 
 const ITEM_SIZE = 100;
 
-interface Node {
-  id: number;
+interface Person {
+  idHash: string;
   name: string;
   gender: 'M' | 'F';
-  parents: number[];
-  children: number[];
-  partner: number;
+  partner: {idHash: string};
+  mother: {idHash: string};
+  father: {idHash: string};
+  parents: {idHash: string}[];
+  sibling: {idHash: string}[];
+  descendant: {idHash: string}[];
+}
+
+interface Positions {
   x: number;
   y: number;
   originX?: number;
   originY?: number;
 }
 
+interface Node extends Person, Positions {}
+
 interface Point {
   x: number;
   y: number;
 }
 
-interface Line {
-  from: Point;
-  to: Point;
-}
-
 export const useNodes = () => {
+  const user = useSelector((state: RootState) => state.user.user);
+
+  const {nodes, lines} = useSelector((state: RootState) => state.tree);
+
+  const {setNodes, setLines} = useTreeActions();
+
+  const [graphData, setGraphData] = useState<Person[]>([]);
   const [mainNode, setMainNode] = useState<Node>({} as Node);
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [lines, setLines] = useState<Line[]>([]);
   const {height} = Dimensions.get('window');
 
   useEffect(() => {
-    const mainNode = getMainNodePosition();
-    setMainNode(mainNode);
-    setNodes([mainNode]);
+    getGraphArray();
   }, []);
 
   useEffect(() => {
+    if (!!graphData.length) {
+      const mainNode = getMainNodePosition();
+      setMainNode(mainNode);
+      setNodes([mainNode]);
+    }
+  }, [graphData]);
+
+  useEffect(() => {
     if (!!nodes.length) {
-      const nodesToConsider = [...nodes].splice(2);
+      const nodesToConsider = nodes.filter(
+        node => node.idHash !== mainNode.idHash,
+      );
       const relationLinesMainNode = getRelationsLinesFromNode(mainNode, [
         ...nodesToConsider,
       ]);
@@ -49,32 +69,60 @@ export const useNodes = () => {
     }
   }, [nodes]);
 
+  const getGraphArray = async () => {
+    try {
+      const token = await Storage.getStorageItem('token');
+
+      const {data: graph} = await api.get(`/myTree/${user.idHash}`, {
+        headers: {Authorization: 'Bearer ' + token},
+      });
+
+      const graphDataWithMappedParents = graph.map(person => {
+        const parents = [];
+        person?.father && parents.push(person.father);
+        person?.mother && parents.push(person.mother);
+
+        return {
+          ...person,
+          parents,
+        };
+      });
+
+      setGraphData(graphDataWithMappedParents);
+    } catch ({response: error}) {
+      console.error({error});
+    }
+  };
+
   function getMainNodePosition() {
+    const me = graphData.find(({idHash}) => idHash === user.idHash);
+
     const node = {
-      ...graph[0],
+      ...me,
       x: height - ITEM_SIZE / 2,
       y: height - ITEM_SIZE / 2,
     } as Node;
     return node;
   }
 
-  function distributeNodes(node: Node) {
-    const partnerNode = getPartnerNode(node);
+  async function distributeNodes(node: Node) {
+    let partnerNode = getPartnerNode(node);
     const parentsNodes = getParentsNode(node);
     const childrenNodes = getChildrenNode(node);
     // const siblingsNodes = getSiblingsNode(node);
 
-    setNodes([
-      mainNode,
-      partnerNode,
-      ...parentsNodes,
-      ...childrenNodes,
-      // ...siblingsNodes
-    ]);
+    const familiarNodes: Node[] = [];
+    familiarNodes.push(mainNode);
+    // partnerNode && familiarNodes.push(partnerNode);
+    parentsNodes.length && familiarNodes.push(...parentsNodes);
+    childrenNodes.length && familiarNodes.push(...childrenNodes);
+
+    setNodes(familiarNodes);
   }
 
   function getPartnerNode(node: Node) {
     const partner = findPartnerNode(node);
+    if (!partner) return;
     const partnerNode = {
       ...partner,
       x: node.x + ITEM_SIZE,
@@ -86,7 +134,7 @@ export const useNodes = () => {
   }
 
   function findPartnerNode(node: Node) {
-    return graph.find(({id}) => id === node.partner);
+    return graphData.find(({idHash}) => idHash === node.partner?.idHash);
   }
 
   function getParentsNode(node: Node) {
@@ -111,7 +159,9 @@ export const useNodes = () => {
   }
 
   function findParentsNodes(node: Node) {
-    return graph.filter(({id}) => node.parents.includes(id));
+    return graphData.filter(({idHash}) =>
+      node.parents.some(parent => parent.idHash === idHash),
+    );
   }
 
   function getChildrenNode(node: Node) {
@@ -142,7 +192,9 @@ export const useNodes = () => {
   }
 
   function findChildrenNodes(node: Node) {
-    return graph.filter(({id}) => node.children.includes(id));
+    return graphData.filter(({idHash}) =>
+      node.descendant.some(children => children.idHash === idHash),
+    );
   }
 
   function getRelationsLinesFromNode(node: Node, familiars: Node[]) {
@@ -163,5 +215,5 @@ export const useNodes = () => {
     return num % 2 === 0;
   }
 
-  return {nodes, lines, distributeNodes};
+  return {nodes, lines, distributeNodes, getGraphArray};
 };
