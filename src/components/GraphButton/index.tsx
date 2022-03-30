@@ -1,16 +1,7 @@
-import {MotiView, useAnimationState} from 'moti';
-import React, {useEffect, useState} from 'react';
+import {MotiView} from 'moti';
+import React from 'react';
 import {TouchableOpacityProps} from 'react-native';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  PressableProps,
-  ColorValue,
-  TouchableOpacity,
-} from 'react-native';
-import {IconProps} from '../Icon';
+import {ColorValue, TouchableOpacity} from 'react-native';
 
 const ITEM_SIZE = 100;
 

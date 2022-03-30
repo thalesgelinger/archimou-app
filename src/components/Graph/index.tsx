@@ -1,31 +1,37 @@
-// import React from 'react';
-import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, Text, View} from 'react-native';
+import React, {
+  ElementRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {ActivityIndicator, Dimensions, Text, View} from 'react-native';
 import Svg from 'react-native-svg';
-import {NodeType} from '../../@types';
 import {ConnectionLine} from '../ConnectionLine';
 import {InteractiveView} from './InteractiveView';
 import {useNavigation} from '@react-navigation/native';
-import {TitleButton} from './styles';
+import {Container, TitleButton} from './styles';
 import {GraphButton} from '../GraphButton';
 import {Node} from '../Node';
 import {useNodes} from '../../hooks/useNodes';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store/store';
+import {Node as NodeType} from '../../store/slices/tree.slice';
+
+type interactiveViewHandler = ElementRef<typeof InteractiveView>;
 
 export function Graph() {
-  const interactiveViewRef = useRef();
+  const interactiveViewRef = useRef<interactiveViewHandler>();
   const {width, height} = Dimensions.get('window');
-  const {nodes, lines, distributeNodes, getGraphArray} = useNodes();
+  const {nodes, lines, isFetchingGraph} = useSelector(
+    (state: RootState) => state.tree,
+  );
+  const {distributeNodes} = useNodes();
 
   const [nodePressed, setNodePressed] = useState<NodeType | null>();
   const [isMoving, setIsMoving] = useState(false);
 
   const {navigate, addListener} = useNavigation();
-
-  useEffect(() => {
-    // addListener('focus', getGraphArray);
-    console.info('CHAMOU GRAPH ARRAY');
-    getGraphArray();
-  }, []);
 
   useEffect(() => {
     if (interactiveViewRef.current) {
@@ -57,6 +63,12 @@ export function Graph() {
     setNodePressed(null);
   };
 
+  const getRandomKey = useCallback(Math.random, []);
+
+  useEffect(() => {
+    console.log({isFetchingGraph});
+  }, [isFetchingGraph]);
+
   return (
     <InteractiveView
       size={height * 2}
@@ -76,7 +88,12 @@ export function Graph() {
           )}
           <Node
             key={index}
-            {...node}
+            name={node.name}
+            x={node.x}
+            y={node.y}
+            gender={node.gender}
+            originX={node.originX}
+            originY={node.originY}
             onLongPress={handleLongPress(node)}
             onPress={addFamiliarNodes(node)}
           />
@@ -94,8 +111,8 @@ export function Graph() {
         </>
       ))}
       <Svg height={height * 2} width={height * 2}>
-        {lines.map((line, index) => (
-          <ConnectionLine key={index} {...line} />
+        {lines.map(line => (
+          <ConnectionLine key={line.to.x / line.to.y} {...line} />
         ))}
       </Svg>
     </InteractiveView>

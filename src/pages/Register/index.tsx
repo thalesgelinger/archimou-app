@@ -13,10 +13,11 @@ import {Image, Modal, ScrollView} from 'react-native';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
 import {api} from '../../services/api';
 import {Storage} from '../../services/Storage';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
 import {RequestRegisterBody, UserType} from '../../store/slices/user.slice';
 import {useUserActions} from '../../hooks/useUserActions';
+import {fetchGraphArray} from '../../store/slices/tree.slice';
 interface RouteParams {
   [key: string]: any;
   kinship: string;
@@ -37,9 +38,11 @@ export const Register = ({navigation, route}: Props) => {
   const [genre, setGenre] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
 
-  const idToken = useSelector((state: RootState) => state.user.idToken);
+  const {user, idToken} = useSelector((state: RootState) => state.user);
 
   const {saveUser} = useUserActions();
+
+  const dispatch = useDispatch();
 
   const handleEditImagePress = async () => {
     const photos = await CameraRoll.getPhotos({first: 50, assetType: 'Photos'});
@@ -93,6 +96,7 @@ export const Register = ({navigation, route}: Props) => {
       await api.post('/parent', requestBodyLinkPerson, {
         headers: {Authorization: 'Bearer ' + token},
       });
+      await dispatch(fetchGraphArray({user, idToken}));
       navigation?.navigate('Home');
     } catch ({response: error}) {
       console.error(error);

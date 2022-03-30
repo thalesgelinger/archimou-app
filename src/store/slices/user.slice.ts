@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-export interface CounterState {
+export interface UserState {
   user: UserType;
   idToken: string;
 }
@@ -23,7 +23,7 @@ export interface RequestRegisterBody {
   photoUrl: string;
 }
 
-const initialState: CounterState = {
+const initialState: UserState = {
   user: {} as UserType,
   idToken: '',
 };

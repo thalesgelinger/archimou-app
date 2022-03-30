@@ -2,63 +2,74 @@ import React, {forwardRef, ReactNode, useImperativeHandle, useRef} from 'react';
 import {Animated, PanResponder, SafeAreaView, StyleSheet} from 'react-native';
 import {PinchGestureHandler} from 'react-native-gesture-handler';
 
-export const InteractiveView = forwardRef(
-  ({children, size, onMoving}: {children: ReactNode}, ref) => {
-    const pan = useRef(new Animated.ValueXY()).current;
-    const scale = new Animated.Value(1);
+interface InteractiveViewProps {
+  children: ReactNode;
+  size: number;
+  onMoving: (isMoving: boolean) => void;
+}
 
-    const panResponder = useRef(
-      PanResponder.create({
-        onMoveShouldSetPanResponder: () => true,
-        onPanResponderGrant: () => {
-          onMoving(true);
-          pan.setOffset({
-            x: pan.x._value,
-            y: pan.y._value,
-          });
-        },
-        onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
-        onPanResponderRelease: (_, gesture) => {
-          pan.flattenOffset();
-        },
-        onPanResponderEnd: () => {
-          onMoving(false);
-        },
-      }),
-    ).current;
+interface InteractiveViewHandler {
+  pan: Animated.ValueXY;
+}
 
-    useImperativeHandle(ref, () => ({
-      pan,
-    }));
+export const InteractiveView = forwardRef<
+  InteractiveViewHandler,
+  InteractiveViewProps
+>(({children, size, onMoving}, ref) => {
+  const pan = useRef(new Animated.ValueXY()).current;
+  const scale = new Animated.Value(1);
 
-    const onPinchEvent = Animated.event(
-      [
-        {
-          nativeEvent: {scale},
-        },
-      ],
-      {
-        useNativeDriver: true,
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: () => {
+        onMoving(true);
+        pan.setOffset({
+          x: pan.x._value,
+          y: pan.y._value,
+        });
       },
-    );
+      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
+      onPanResponderRelease: (_, gesture) => {
+        pan.flattenOffset();
+      },
+      onPanResponderEnd: () => {
+        onMoving(false);
+      },
+    }),
+  ).current;
 
-    return (
-      <SafeAreaView>
-        <PinchGestureHandler onGestureEvent={onPinchEvent}>
-          <Animated.View
-            style={
-              {
-                transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}],
-                backgroundColor: 'white',
-                width: size,
-                height: size,
-              } as StyleSheet.NamedStyles<{}>
-            }
-            {...panResponder.panHandlers}>
-            {children}
-          </Animated.View>
-        </PinchGestureHandler>
-      </SafeAreaView>
-    );
-  },
-);
+  useImperativeHandle(ref, () => ({
+    pan,
+  }));
+
+  const onPinchEvent = Animated.event(
+    [
+      {
+        nativeEvent: {scale},
+      },
+    ],
+    {
+      useNativeDriver: true,
+    },
+  );
+
+  return (
+    <SafeAreaView>
+      <PinchGestureHandler onGestureEvent={onPinchEvent}>
+        <Animated.View
+          style={
+            {
+              transform: [{translateX: pan.x}, {translateY: pan.y}, {scale}],
+              backgroundColor: 'white',
+              width: size,
+              height: size,
+            } as StyleSheet.NamedStyles<{}>
+          }
+          {...panResponder.panHandlers}>
+          {children}
+        </Animated.View>
+      </PinchGestureHandler>
+    </SafeAreaView>
+  );
+});

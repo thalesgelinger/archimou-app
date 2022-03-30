@@ -1,8 +1,12 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {api} from '../../services/api';
+import {UserState} from './user.slice';
 
 export interface TreeState {
   nodes: Node[];
   lines: Line[];
+  graph: [];
+  isFetchingGraph: boolean;
 }
 
 interface Person {
@@ -24,7 +28,7 @@ interface Positions {
   originY?: number;
 }
 
-interface Node extends Person, Positions {}
+export interface Node extends Person, Positions {}
 
 interface Point {
   x: number;
@@ -39,6 +43,8 @@ interface Line {
 const initialState: TreeState = {
   nodes: [],
   lines: [],
+  graph: [],
+  isFetchingGraph: false,
 };
 
 export const treeSlice = createSlice({
@@ -51,8 +57,44 @@ export const treeSlice = createSlice({
     setLines(state, {payload: lines}) {
       state.lines = lines;
     },
+    setIsFetching(state, {payload: isFetching}) {
+      state.isFetchingGraph = isFetching;
+    },
+  },
+  extraReducers: builder => {
+    builder.addCase(fetchGraphArray.fulfilled, (state, {payload: graph}) => {
+      state.graph = graph;
+    });
   },
 });
+
+export const fetchGraphArray = createAsyncThunk(
+  'tree/fetchGraph',
+  async ({user, idToken}: UserState, thunkApi) => {
+    try {
+      thunkApi.dispatch(actions.setIsFetching(true));
+      const {data: graph} = await api.get(`/myTree/${user.idHash}`, {
+        headers: {Authorization: 'Bearer ' + idToken},
+      });
+
+      const graphDataWithMappedParents = graph.map(person => {
+        const parents = [];
+        person?.father && parents.push(person.father);
+        person?.mother && parents.push(person.mother);
+
+        return {
+          ...person,
+          parents,
+        };
+      });
+
+      thunkApi.dispatch(actions.setIsFetching(false));
+      return graphDataWithMappedParents;
+    } catch ({response: error}) {
+      console.error({error});
+    }
+  },
+);
 
 export const actions = treeSlice.actions;
 

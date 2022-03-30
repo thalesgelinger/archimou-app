@@ -29,8 +29,9 @@ export const Login = () => {
       const {data: user} = await api.get('/findMe', {
         headers: {Authorization: 'Bearer ' + token},
       });
-      saveUser(user);
+      await Storage.setStorageItem('user', user);
       saveIdToken(token);
+      saveUser(user);
     } catch ({response: error}) {
       if (error.status === 404) {
         saveIdToken(token);

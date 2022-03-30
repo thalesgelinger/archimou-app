@@ -1,10 +1,11 @@
 import {RootState} from './../store/store';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {api} from './../services/api';
 import {Dimensions} from 'react-native';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback, useReducer} from 'react';
 import {Storage} from '../services/Storage';
 import {useTreeActions} from './useTreeActions';
+import {fetchGraphArray} from '../store/slices/tree.slice';
 
 const ITEM_SIZE = 100;
 
@@ -35,64 +36,61 @@ interface Point {
 }
 
 export const useNodes = () => {
-  const user = useSelector((state: RootState) => state.user.user);
+  const [isCalculatingNodes, toggleIsLoading] = useReducer(s => !s, true);
+
+  const {user, idToken} = useSelector((state: RootState) => state.user);
 
   const {nodes, lines} = useSelector((state: RootState) => state.tree);
 
-  const {setNodes, setLines} = useTreeActions();
+  const graphData = useSelector((state: RootState) => state.tree.graph);
 
-  const [graphData, setGraphData] = useState<Person[]>([]);
+  const {setNodes, setLines} = useTreeActions();
   const [mainNode, setMainNode] = useState<Node>({} as Node);
   const {height} = Dimensions.get('window');
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    getGraphArray();
+    dispatch(fetchGraphArray({user, idToken}));
   }, []);
 
   useEffect(() => {
-    if (!!graphData.length) {
+    if (!!graphData?.length) {
       const mainNode = getMainNodePosition();
+      console.log({mainNode});
       setMainNode(mainNode);
-      setNodes([mainNode]);
     }
   }, [graphData]);
 
   useEffect(() => {
+    const distributedNodes = distributeNodes(mainNode);
+    setNodes(distributedNodes);
+  }, [mainNode]);
+
+  useEffect(() => {
     if (!!nodes.length) {
+      console.log({nodes});
+
       const nodesToConsider = nodes.filter(
         node => node.idHash !== mainNode.idHash,
       );
-      const relationLinesMainNode = getRelationsLinesFromNode(mainNode, [
-        ...nodesToConsider,
-      ]);
-      setLines([...relationLinesMainNode]);
+
+      console.log({nodesToConsider});
+
+      const relationLinesMainNode = getRelationsLinesFromNode(
+        mainNode,
+        nodesToConsider,
+      );
+
+      setLines(relationLinesMainNode);
     }
   }, [nodes]);
 
-  const getGraphArray = async () => {
-    try {
-      const token = await Storage.getStorageItem('token');
-
-      const {data: graph} = await api.get(`/myTree/${user.idHash}`, {
-        headers: {Authorization: 'Bearer ' + token},
-      });
-
-      const graphDataWithMappedParents = graph.map(person => {
-        const parents = [];
-        person?.father && parents.push(person.father);
-        person?.mother && parents.push(person.mother);
-
-        return {
-          ...person,
-          parents,
-        };
-      });
-
-      setGraphData(graphDataWithMappedParents);
-    } catch ({response: error}) {
-      console.error({error});
+  useEffect(() => {
+    if (!!lines.length) {
+      toggleIsLoading();
     }
-  };
+  }, [lines]);
 
   function getMainNodePosition() {
     const me = graphData.find(({idHash}) => idHash === user.idHash);
@@ -105,7 +103,7 @@ export const useNodes = () => {
     return node;
   }
 
-  async function distributeNodes(node: Node) {
+  const distributeNodes = (node: Node) => {
     let partnerNode = getPartnerNode(node);
     const parentsNodes = getParentsNode(node);
     const childrenNodes = getChildrenNode(node);
@@ -117,8 +115,8 @@ export const useNodes = () => {
     parentsNodes.length && familiarNodes.push(...parentsNodes);
     childrenNodes.length && familiarNodes.push(...childrenNodes);
 
-    setNodes(familiarNodes);
-  }
+    return familiarNodes;
+  };
 
   function getPartnerNode(node: Node) {
     const partner = findPartnerNode(node);
@@ -208,6 +206,7 @@ export const useNodes = () => {
         y: familiar.y,
       },
     }));
+    console.log({familiarsLines});
     return familiarsLines;
   }
 
@@ -215,5 +214,5 @@ export const useNodes = () => {
     return num % 2 === 0;
   }
 
-  return {nodes, lines, distributeNodes, getGraphArray};
+  return {isCalculatingNodes, distributeNodes};
 };
