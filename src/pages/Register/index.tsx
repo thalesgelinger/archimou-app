@@ -18,6 +18,7 @@ import {RootState} from '../../store/store';
 import {RequestRegisterBody, UserType} from '../../store/slices/user.slice';
 import {useUserActions} from '../../hooks/useUserActions';
 import {fetchGraphArray} from '../../store/slices/tree.slice';
+import {useTreeActions} from '../../hooks/useTreeActions';
 interface RouteParams {
   [key: string]: any;
   kinship: string;
@@ -42,6 +43,8 @@ export const Register = ({navigation, route}: Props) => {
 
   const {saveUser} = useUserActions();
 
+  const {setIsLoading} = useTreeActions();
+
   const dispatch = useDispatch();
 
   const handleEditImagePress = async () => {
@@ -51,10 +54,8 @@ export const Register = ({navigation, route}: Props) => {
 
   const handleRegister = async () => {
     if (kinship) {
-      console.log('registerFamiliar');
       await registerFamiliar();
     } else {
-      console.log('registerNewUser');
       await registerNewUser();
     }
   };
@@ -80,8 +81,6 @@ export const Register = ({navigation, route}: Props) => {
     try {
       const token = await Storage.getStorageItem('token');
       const body = createBodyRequest();
-
-      console.log({body, token});
 
       const {data: newUser} = await api.post('/register/anonimous', body, {
         headers: {Authorization: 'Bearer ' + token},

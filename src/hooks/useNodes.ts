@@ -57,7 +57,6 @@ export const useNodes = () => {
   useEffect(() => {
     if (!!graphData?.length) {
       const mainNode = getMainNodePosition();
-      console.log({mainNode});
       setMainNode(mainNode);
     }
   }, [graphData]);

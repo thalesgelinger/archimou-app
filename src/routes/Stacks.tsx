@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {Text, View} from 'react-native';
+
 import {useSelector} from 'react-redux';
 import {Home} from '../pages';
 import {KinshipSelection} from '../pages/KinshipSelection';

@@ -14,8 +14,6 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import 'react-native-reanimated';
 import {Provider} from 'react-redux';
 import {store} from './src/store/store';
-import {View} from 'moti';
-import {Text} from 'react-native';
 
 GoogleSignin.configure({
   webClientId:

@@ -33,10 +33,15 @@ export function Graph() {
 
   const {navigate, addListener} = useNavigation();
 
+  const initialPositionCenter = {
+    x: -height + width / 2,
+    y: -height + height / 2,
+  };
+
   useEffect(() => {
     if (interactiveViewRef.current) {
-      interactiveViewRef.current.pan.x.setValue(-height + width / 2);
-      interactiveViewRef.current.pan.y.setValue(-height + height / 2);
+      interactiveViewRef.current.pan.x.setValue(initialPositionCenter.x);
+      interactiveViewRef.current.pan.y.setValue(initialPositionCenter.y);
     }
   }, [interactiveViewRef]);
 
@@ -48,9 +53,15 @@ export function Graph() {
 
   function addFamiliarNodes(node: NodeType) {
     return () => {
+      centerNode(node);
       distributeNodes(node);
     };
   }
+
+  const centerNode = (node: NodeType) => {
+    interactiveViewRef.current?.pan.x.setValue(-height + width / 2);
+    interactiveViewRef.current?.pan.y.setValue(-height + height / 2);
+  };
 
   const handleLongPress = (node: NodeType) => {
     return () => {

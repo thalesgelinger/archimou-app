@@ -7,6 +7,7 @@ export interface TreeState {
   lines: Line[];
   graph: [];
   isFetchingGraph: boolean;
+  isLoading: boolean;
 }
 
 interface Person {
@@ -45,6 +46,7 @@ const initialState: TreeState = {
   lines: [],
   graph: [],
   isFetchingGraph: false,
+  isLoading: false,
 };
 
 export const treeSlice = createSlice({
@@ -60,6 +62,9 @@ export const treeSlice = createSlice({
     setIsFetching(state, {payload: isFetching}) {
       state.isFetchingGraph = isFetching;
     },
+    setIsLoading(state, {payload: isLoading}) {
+      state.isLoading = isLoading;
+    },
   },
   extraReducers: builder => {
     builder.addCase(fetchGraphArray.fulfilled, (state, {payload: graph}) => {
@@ -73,6 +78,7 @@ export const fetchGraphArray = createAsyncThunk(
   async ({user, idToken}: UserState, thunkApi) => {
     try {
       thunkApi.dispatch(actions.setIsFetching(true));
+      console.log({idTokenNOFETCH: idToken});
       const {data: graph} = await api.get(`/myTree/${user.idHash}`, {
         headers: {Authorization: 'Bearer ' + idToken},
       });
