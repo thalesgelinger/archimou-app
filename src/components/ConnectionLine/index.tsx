@@ -20,10 +20,18 @@ export function ConnectionLine({from, to}) {
     activeAnimation(y2, yEnd);
   }, [x2, y2]);
 
+  useEffect(() => {
+    console.log('ENTROU');
+    return () => {
+      console.log('SAIU');
+    };
+  }, []);
+
   function activeAnimation(animatedRef: Animated.Value, toValue: any) {
     Animated.timing(animatedRef, {
       toValue,
-      duration: 2000,
+      duration: 1000,
+      delay: 1000,
       useNativeDriver: false,
     }).start();
   }
