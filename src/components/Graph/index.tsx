@@ -8,7 +8,7 @@ import React, {
 import {ActivityIndicator, Dimensions, Text, View} from 'react-native';
 import Svg from 'react-native-svg';
 import {ConnectionLine} from '../ConnectionLine';
-import {InteractiveView} from './InteractiveView';
+import {InteractiveView} from './InteractiveView/index';
 import {useNavigation} from '@react-navigation/native';
 import {Container, TitleButton} from './styles';
 import {GraphButton} from '../GraphButton';
@@ -40,8 +40,11 @@ export function Graph() {
 
   useEffect(() => {
     if (interactiveViewRef.current) {
-      interactiveViewRef.current.pan.x.setValue(initialPositionCenter.x);
-      interactiveViewRef.current.pan.y.setValue(initialPositionCenter.y);
+      console.log({
+        initialPositionCenter,
+      });
+      interactiveViewRef.current.pan.x.set(initialPositionCenter.x);
+      interactiveViewRef.current.pan.y.set(initialPositionCenter.y);
     }
   }, [interactiveViewRef]);
 
@@ -59,8 +62,8 @@ export function Graph() {
   }
 
   const centerNode = (node: NodeType) => {
-    interactiveViewRef.current?.pan.x.setValue(-height + width / 2);
-    interactiveViewRef.current?.pan.y.setValue(-height + height / 2);
+    interactiveViewRef.current?.pan.x.set(-height + width / 2);
+    interactiveViewRef.current?.pan.y.set(-height + height / 2);
   };
 
   const handleLongPress = (node: NodeType) => {
@@ -75,10 +78,6 @@ export function Graph() {
   };
 
   const getRandomKey = useCallback(Math.random, []);
-
-  useEffect(() => {
-    console.log({isFetchingGraph});
-  }, [isFetchingGraph]);
 
   return (
     <InteractiveView

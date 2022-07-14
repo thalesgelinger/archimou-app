@@ -1,6 +1,6 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {api} from '../../services/api';
-import {UserState} from './user.slice';
+import {UserState, actions as userActions} from './user.slice';
 
 export interface TreeState {
   nodes: Node[];
@@ -79,6 +79,9 @@ export const fetchGraphArray = createAsyncThunk(
     try {
       thunkApi.dispatch(actions.setIsFetching(true));
       console.log({idTokenNOFETCH: idToken});
+
+      console.log({idToken});
+
       const {data: graph} = await api.get(`/myTree/${user.idHash}`, {
         headers: {Authorization: 'Bearer ' + idToken},
       });
@@ -97,6 +100,7 @@ export const fetchGraphArray = createAsyncThunk(
       thunkApi.dispatch(actions.setIsFetching(false));
       return graphDataWithMappedParents;
     } catch ({response: error}) {
+      thunkApi.dispatch(userActions.backToLogin());
       console.error({error});
     }
   },

@@ -42,13 +42,6 @@ export const Routes = () => {
     setIsFetchingFromStorage(false);
   };
 
-  useEffect(() => {
-    console.log('STARTANDO TUDOO', {
-      user,
-      idToken,
-    });
-  }, [user, idToken]);
-
   if (!idToken && !user?.idHash) {
     return <Login />;
   }
