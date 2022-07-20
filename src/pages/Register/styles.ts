@@ -23,6 +23,9 @@ export const ProfilePicture = styled.Image`
   border-radius: 118px;
   position: absolute;
   z-index: -10;
+  flex: 1;
+  height: 200px;
+  width: 200px;
 `;
 
 export const EditProfilePicture = styled(EditButton)`

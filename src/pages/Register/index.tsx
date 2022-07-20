@@ -9,7 +9,7 @@ import {
 } from './styles';
 import defaultUserImage from '../../assets/user-default.png';
 import CameraRoll from '@react-native-community/cameraroll';
-import {Image, Modal, ScrollView} from 'react-native';
+import {Image, ImageSourcePropType, Modal, ScrollView} from 'react-native';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
 import {api} from '../../services/api';
 import {Storage} from '../../services/Storage';
@@ -19,6 +19,7 @@ import {RequestRegisterBody, UserType} from '../../store/slices/user.slice';
 import {useUserActions} from '../../hooks/useUserActions';
 import {fetchGraphArray} from '../../store/slices/tree.slice';
 import {useTreeActions} from '../../hooks/useTreeActions';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 interface RouteParams {
   [key: string]: any;
   kinship: string;
@@ -31,6 +32,9 @@ interface Props {
 export const Register = ({navigation, route}: Props) => {
   const kinship = route?.params?.kinship ?? null;
 
+  const [image, setImage] = useState<ImageSourcePropType>(
+    {} as ImageSourcePropType,
+  );
   const [showPhotos, setShowPhotos] = useState(false);
   const [photos, setPhotos] = useState([]);
 
@@ -48,16 +52,27 @@ export const Register = ({navigation, route}: Props) => {
   const dispatch = useDispatch();
 
   const handleEditImagePress = async () => {
-    const photos = await CameraRoll.getPhotos({first: 50, assetType: 'Photos'});
-    console.log({photos});
+    try {
+      const {assets} = await launchImageLibrary({
+        selectionLimit: 50,
+        mediaType: 'photo',
+      });
+      const {uri = ''} = assets?.[0];
+      console.log({uri});
+      setImage({uri});
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleRegister = async () => {
+    setIsLoading(true);
     if (kinship) {
       await registerFamiliar();
     } else {
       await registerNewUser();
     }
+    setIsLoading(false);
   };
 
   const register = async (body: RequestRegisterBody) => {
@@ -126,8 +141,7 @@ export const Register = ({navigation, route}: Props) => {
         <BackButton navigate={navigation} />
 
         <ProfileContainer onPress={handleEditImagePress}>
-          {/* <EditProfilePicture /> */}
-          <ProfilePicture source={defaultUserImage} />
+          <ProfilePicture source={!!image?.uri ? image : defaultUserImage} />
         </ProfileContainer>
 
         {showPhotos && (

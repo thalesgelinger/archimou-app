@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import {Routes} from './src/routes';
+import {LoadingModal, Routes} from './src/routes';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import 'react-native-reanimated';
 import {Provider} from 'react-redux';
@@ -22,6 +22,7 @@ GoogleSignin.configure({
 
 const App = () => (
   <Provider store={store}>
+    <LoadingModal />
     <Routes />
   </Provider>
 );

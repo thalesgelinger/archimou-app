@@ -10,7 +10,7 @@ import {
 import {Container} from '../Graph/styles';
 import {Icon} from '../Icon';
 
-const ITEM_SIZE = 100;
+export const ITEM_SIZE = 100;
 
 interface Props extends PressableProps {
   name: string;

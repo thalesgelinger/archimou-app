@@ -12,7 +12,7 @@ import {InteractiveView} from './InteractiveView';
 import {useNavigation} from '@react-navigation/native';
 import {Container, TitleButton} from './styles';
 import {GraphButton} from '../GraphButton';
-import {Node} from '../Node';
+import {ITEM_SIZE, Node} from '../Node';
 import {useNodes} from '../../hooks/useNodes';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
@@ -29,7 +29,6 @@ export function Graph() {
   const {distributeNodes} = useNodes();
 
   const [nodePressed, setNodePressed] = useState<NodeType | null>();
-  const [isMoving, setIsMoving] = useState(false);
 
   const {navigate, addListener} = useNavigation();
 
@@ -38,10 +37,14 @@ export function Graph() {
     y: -height + height / 2,
   };
 
+  const isMoving = !!interactiveViewRef.current?.isMoving;
+
+  console.log({isMoving});
+
   useEffect(() => {
     if (interactiveViewRef.current) {
-      interactiveViewRef.current.pan.x.setValue(initialPositionCenter.x);
-      interactiveViewRef.current.pan.y.setValue(initialPositionCenter.y);
+      interactiveViewRef.current.pan.x.set(initialPositionCenter.x);
+      interactiveViewRef.current.pan.y.set(initialPositionCenter.y);
     }
   }, [interactiveViewRef]);
 
@@ -59,8 +62,13 @@ export function Graph() {
   }
 
   const centerNode = (node: NodeType) => {
-    interactiveViewRef.current?.pan.x.setValue(-height + width / 2);
-    interactiveViewRef.current?.pan.y.setValue(-height + height / 2);
+    const screenCenter = {
+      x: width / 2 - ITEM_SIZE / 2,
+      y: height / 2 - ITEM_SIZE / 2,
+    };
+
+    interactiveViewRef.current?.pan.x.set(-node.x + screenCenter.x);
+    interactiveViewRef.current?.pan.y.set(-node.y + screenCenter.y);
   };
 
   const handleLongPress = (node: NodeType) => {
@@ -76,15 +84,8 @@ export function Graph() {
 
   const getRandomKey = useCallback(Math.random, []);
 
-  useEffect(() => {
-    console.log({isFetchingGraph});
-  }, [isFetchingGraph]);
-
   return (
-    <InteractiveView
-      size={height * 2}
-      ref={interactiveViewRef}
-      onMoving={setIsMoving}>
+    <InteractiveView size={height * 2} ref={interactiveViewRef}>
       {nodes.map((node, index) => (
         <>
           {!!nodePressed && !isMoving && (

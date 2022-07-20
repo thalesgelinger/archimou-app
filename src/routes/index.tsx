@@ -11,13 +11,13 @@ import {Modal, View, ActivityIndicator} from 'react-native';
 
 export const LoadingModal = () => {
   const isLoading = useSelector((state: RootState) => state.tree.isLoading);
-  return (
-    <Modal visible={isLoading}>
+  return isLoading ? (
+    <Modal>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <ActivityIndicator size="large" color={'#000000'} />
       </View>
     </Modal>
-  );
+  ) : null;
 };
 
 export const Routes = () => {
@@ -41,13 +41,6 @@ export const Routes = () => {
     }
     setIsFetchingFromStorage(false);
   };
-
-  useEffect(() => {
-    console.log('STARTANDO TUDOO', {
-      user,
-      idToken,
-    });
-  }, [user, idToken]);
 
   if (!idToken && !user?.idHash) {
     return <Login />;

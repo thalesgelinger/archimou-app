@@ -51,8 +51,10 @@ export const useNodes = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchGraphArray({user, idToken}));
-  }, []);
+    if (!!idToken) {
+      dispatch(fetchGraphArray({user, idToken}));
+    }
+  }, [idToken]);
 
   useEffect(() => {
     if (!!graphData?.length) {
