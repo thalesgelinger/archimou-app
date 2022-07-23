@@ -75,14 +75,14 @@ export const treeSlice = createSlice({
 
 export const fetchGraphArray = createAsyncThunk(
   'tree/fetchGraph',
-  async ({user, idToken}: UserState, thunkApi) => {
+  async ({idHash, idToken}: {idHash: string; idToken: string}, thunkApi) => {
     try {
       thunkApi.dispatch(actions.setIsFetching(true));
       console.log({idTokenNOFETCH: idToken});
 
       console.log({idToken});
 
-      const {data: graph} = await api.get(`/myTree/${user.idHash}`, {
+      const {data: graph} = await api.get(`/myTree/${idHash}`, {
         headers: {Authorization: 'Bearer ' + idToken},
       });
 

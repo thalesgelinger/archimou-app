@@ -27,6 +27,11 @@ export const KinshipSelection = ({route}) => {
   );
 
   const handleContinue = async () => {
+    console.log({
+      kinship: selectedKinship,
+      nodePressed: node,
+    });
+
     navigation.replace('Register', {
       kinship: selectedKinship,
       nodePressed: node,

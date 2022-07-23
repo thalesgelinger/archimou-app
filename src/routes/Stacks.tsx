@@ -21,6 +21,7 @@ export const Stacks = () => {
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Kinship" component={KinshipSelection} />
       <Stack.Screen name="Register" component={Register} />
+      <Stack.Screen name="Profile" component={Register} />
     </Stack.Navigator>
   );
 };

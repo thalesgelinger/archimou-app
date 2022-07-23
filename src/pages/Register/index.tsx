@@ -43,7 +43,7 @@ export const Register = ({navigation, route}: Props) => {
   const [genre, setGenre] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
 
-  const {user, idToken} = useSelector((state: RootState) => state.user);
+  const {idToken} = useSelector((state: RootState) => state.user);
 
   const {saveUser} = useUserActions();
 
@@ -77,6 +77,7 @@ export const Register = ({navigation, route}: Props) => {
 
   const register = async (body: RequestRegisterBody) => {
     try {
+      console.log({body});
       const {data: user} = await api.post<UserType>(
         '/register/firebase',
         body,
@@ -94,11 +95,12 @@ export const Register = ({navigation, route}: Props) => {
 
   const registerFamiliar = async () => {
     try {
-      const token = await Storage.getStorageItem('token');
       const body = createBodyRequest();
 
+      console.log({body});
+
       const {data: newUser} = await api.post('/register/anonimous', body, {
-        headers: {Authorization: 'Bearer ' + token},
+        headers: {Authorization: 'Bearer ' + idToken},
       });
 
       const requestBodyLinkPerson = {
@@ -108,9 +110,11 @@ export const Register = ({navigation, route}: Props) => {
       };
 
       await api.post('/parent', requestBodyLinkPerson, {
-        headers: {Authorization: 'Bearer ' + token},
+        headers: {Authorization: 'Bearer ' + idToken},
       });
-      await dispatch(fetchGraphArray({user, idToken}));
+      await dispatch(
+        fetchGraphArray({idHash: route?.params?.nodePressed.idHash, idToken}),
+      );
       navigation?.navigate('Home');
     } catch ({response: error}) {
       console.error(error);

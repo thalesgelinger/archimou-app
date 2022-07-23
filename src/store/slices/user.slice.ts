@@ -40,7 +40,6 @@ export const userSlice = createSlice({
     },
     backToLogin(state) {
       state.idToken = '';
-      state.user = {} as UserType;
     },
   },
 });

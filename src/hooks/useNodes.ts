@@ -36,6 +36,7 @@ interface Point {
 }
 
 export const useNodes = () => {
+  const [hash, setHash] = useState('');
   const [isCalculatingNodes, toggleIsLoading] = useReducer(s => !s, true);
 
   const {user, idToken} = useSelector((state: RootState) => state.user);
@@ -51,13 +52,21 @@ export const useNodes = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log('FIRST EFFECT');
     if (!!idToken) {
-      dispatch(fetchGraphArray({user, idToken}));
+      setHash(user.idHash);
     }
   }, [idToken]);
 
   useEffect(() => {
-    if (!!graphData?.length) {
+    console.log('FETCH GRAPH');
+    if (!!hash) {
+      fetchGraph(user.idHash);
+    }
+  }, [hash]);
+
+  useEffect(() => {
+    if (!!graphData?.length && !mainNode?.idHash) {
       const mainNode = getMainNodePosition();
       setMainNode(mainNode);
     }
@@ -65,7 +74,7 @@ export const useNodes = () => {
 
   useEffect(() => {
     const distributedNodes = distributeNodes(mainNode);
-    setNodes(distributedNodes);
+    setNodes([...nodes, ...distributedNodes]);
   }, [mainNode]);
 
   useEffect(() => {
@@ -83,7 +92,7 @@ export const useNodes = () => {
         nodesToConsider,
       );
 
-      setLines(relationLinesMainNode);
+      setLines([...lines, ...relationLinesMainNode]);
     }
   }, [nodes]);
 
@@ -92,6 +101,10 @@ export const useNodes = () => {
       toggleIsLoading();
     }
   }, [lines]);
+
+  async function fetchGraph(idHash: string) {
+    await dispatch(fetchGraphArray({idHash, idToken}));
+  }
 
   function getMainNodePosition() {
     const me = graphData.find(({idHash}) => idHash === user.idHash);
@@ -215,5 +228,5 @@ export const useNodes = () => {
     return num % 2 === 0;
   }
 
-  return {isCalculatingNodes, distributeNodes};
+  return {isCalculatingNodes, distributeNodes, setNodeHash: setHash};
 };

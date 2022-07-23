@@ -26,9 +26,11 @@ export function Graph() {
   const {nodes, lines, isFetchingGraph} = useSelector(
     (state: RootState) => state.tree,
   );
-  const {distributeNodes} = useNodes();
+  const {setNodeHash} = useNodes();
 
   const [nodePressed, setNodePressed] = useState<NodeType | null>();
+
+  const [isMoving, setIsMoving] = useState();
 
   const {navigate, addListener} = useNavigation();
 
@@ -36,8 +38,6 @@ export function Graph() {
     x: -height + width / 2,
     y: -height + height / 2,
   };
-
-  const isMoving = !!interactiveViewRef.current?.isMoving;
 
   console.log({isMoving});
 
@@ -57,7 +57,7 @@ export function Graph() {
   function addFamiliarNodes(node: NodeType) {
     return () => {
       centerNode(node);
-      distributeNodes(node);
+      setNodeHash(node.idHash);
     };
   }
 
@@ -84,8 +84,15 @@ export function Graph() {
 
   const getRandomKey = useCallback(Math.random, []);
 
+  const goToProfile = (node: NodeType) => () => {
+    navigate('Profile');
+  };
+
   return (
-    <InteractiveView size={height * 2} ref={interactiveViewRef}>
+    <InteractiveView
+      size={height * 2}
+      ref={interactiveViewRef}
+      onMove={setIsMoving}>
       {nodes.map((node, index) => (
         <>
           {!!nodePressed && !isMoving && (
@@ -94,7 +101,8 @@ export function Graph() {
               y={nodePressed.y - 150}
               originX={nodePressed.x}
               originY={nodePressed.y}
-              color="#8c59b5">
+              color="#8c59b5"
+              onPress={goToProfile(node)}>
               <TitleButton>Perfil</TitleButton>
             </GraphButton>
           )}
@@ -108,6 +116,7 @@ export function Graph() {
             originY={node.originY}
             onLongPress={handleLongPress(node)}
             onPress={addFamiliarNodes(node)}
+            // image={}
           />
           {!!nodePressed && !isMoving && (
             <GraphButton
@@ -123,6 +132,7 @@ export function Graph() {
         </>
       ))}
       <Svg height={height * 2} width={height * 2}>
+        {console.log({lines})}
         {lines.map(line => (
           <ConnectionLine key={line.to.x / line.to.y} {...line} />
         ))}

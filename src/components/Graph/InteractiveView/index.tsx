@@ -13,44 +13,41 @@ import {
   GestureHandlerRootView,
 } from 'react-native-gesture-handler';
 import Animated, {
+  useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 
 interface InteractiveViewProps {
   children: ReactNode;
   size: number;
-  onMoving: (isMoving: boolean) => void;
+  onMove: (isMoving: boolean) => void;
 }
 
 interface InteractiveViewHandler {
   pan: any;
-  isMoving: boolean;
 }
 
 export const InteractiveView = forwardRef<
   InteractiveViewHandler,
   InteractiveViewProps
->(({children, size}, ref) => {
+>(({children, size, onMove}, ref) => {
   const x = useSharedValue(0);
   const y = useSharedValue(0);
   const initialValue = useSharedValue({x: 0, y: 0});
 
   const panGesture = Gesture.Pan()
     .onStart(e => {
-      console.log('START PAN', initialValue.value);
       initialValue.value = {
         x: x.value,
         y: y.value,
       };
     })
     .onUpdate(e => {
-      console.log('UPDATE PAN', initialValue.value);
       x.value = e.translationX + initialValue.value.x;
       y.value = e.translationY + initialValue.value.y;
-    })
-    .onEnd(e => {
-      console.log('END PAN');
     });
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
@@ -73,25 +70,25 @@ export const InteractiveView = forwardRef<
     ],
   }));
 
-  const isMoving = useMemo(() => {
-    console.log({x, y});
-    return false;
-  }, [x, y]);
+  const derivated = useDerivedValue(() => {
+    return x.value !== initialValue.value.x;
+  });
+
+  console.log({derivated});
 
   useImperativeHandle(ref, () => ({
     pan: {
       x: {
         set(value: number) {
-          x.value = value;
+          x.value = withTiming(value, {duration: 300});
         },
       },
       y: {
         set(value: number) {
-          y.value = value;
+          y.value = withTiming(value, {duration: 300});
         },
       },
     },
-    isMoving,
   }));
 
   return (

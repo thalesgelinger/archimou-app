@@ -15,6 +15,7 @@ export const Login = () => {
   const {setIsLoading} = useTreeActions();
 
   useEffect(() => {
+    console.log('REAUTH');
     reAuth();
   }, []);
 
@@ -49,7 +50,10 @@ export const Login = () => {
         'credential',
         JSON.stringify(googleCredential),
       );
-      await authorize(googleCredential);
+      const response = await auth().signInWithCredential(googleCredential);
+      const token = await response.user.getIdToken(true);
+      await Storage.setStorageItem('token', token);
+      await handleUserToken(token);
       setIsLoading(false);
     } catch (e) {
       console.error(e);
