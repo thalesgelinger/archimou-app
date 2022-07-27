@@ -107,7 +107,7 @@ export function Graph() {
             </GraphButton>
           )}
           <Node
-            key={index}
+            key={node.idHash}
             name={node.name}
             x={node.x}
             y={node.y}

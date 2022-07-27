@@ -5,7 +5,7 @@ import {UserState, actions as userActions} from './user.slice';
 export interface TreeState {
   nodes: Node[];
   lines: Line[];
-  graph: [];
+  graph: Node[];
   isFetchingGraph: boolean;
   isLoading: boolean;
 }
@@ -34,6 +34,7 @@ export interface Node extends Person, Positions {}
 interface Point {
   x: number;
   y: number;
+  id: string;
 }
 
 interface Line {
@@ -78,13 +79,12 @@ export const fetchGraphArray = createAsyncThunk(
   async ({idHash, idToken}: {idHash: string; idToken: string}, thunkApi) => {
     try {
       thunkApi.dispatch(actions.setIsFetching(true));
-      console.log({idTokenNOFETCH: idToken});
-
-      console.log({idToken});
 
       const {data: graph} = await api.get(`/myTree/${idHash}`, {
         headers: {Authorization: 'Bearer ' + idToken},
       });
+
+      console.info({graph});
 
       const graphDataWithMappedParents = graph.map(person => {
         const parents = [];

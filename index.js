@@ -8,4 +8,4 @@ import {name as appName} from './app.json';
 import {LogBox} from 'react-native';
 
 AppRegistry.registerComponent(appName, () => App);
-// LogBox.ignoreAllLogs();
+LogBox.ignoreAllLogs();

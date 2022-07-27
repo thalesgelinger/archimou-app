@@ -59,40 +59,68 @@ export const useNodes = () => {
   }, [idToken]);
 
   useEffect(() => {
-    console.log('FETCH GRAPH');
+    console.info('FETCH GRAPH', {hash});
     if (!!hash) {
-      fetchGraph(user.idHash);
+      fetchGraph(hash);
     }
   }, [hash]);
 
   useEffect(() => {
-    if (!!graphData?.length && !mainNode?.idHash) {
+    console.info('CHAMOU AQUI COM GRAPH DATA', {
+      graphData: graphData.find(({descendant}) => descendant.length > 0),
+      mainNode,
+    });
+    if (!!graphData?.length) {
       const mainNode = getMainNodePosition();
-      setMainNode(mainNode);
+      const nodeUpdated = graphData.find(
+        ({idHash}) => idHash === mainNode.idHash,
+      )!;
+
+      const node = {
+        ...mainNode,
+        ...nodeUpdated,
+      };
+
+      setMainNode(node);
     }
   }, [graphData]);
 
   useEffect(() => {
+    console.log({mainNode});
     const distributedNodes = distributeNodes(mainNode);
-    setNodes([...nodes, ...distributedNodes]);
+    console.log({nodes, distributedNodes});
+    setNodes([...nodes, ...distributedNodes].filter(n => !!n.idHash));
   }, [mainNode]);
 
   useEffect(() => {
     if (!!nodes.length) {
       console.log({nodes});
 
-      const nodesToConsider = nodes.filter(
-        node => node.idHash !== mainNode.idHash,
-      );
+      const familiarNodesToConsider = (node: Node) => {
+        const idsArray = [
+          ...mainNode.parents.map(({idHash}) => idHash),
+          ...mainNode.descendant.map(({idHash}) => idHash),
+        ];
 
-      console.log({nodesToConsider});
+        return idsArray.includes(node.idHash);
+      };
+
+      const nodesToConsider = nodes.filter(familiarNodesToConsider);
 
       const relationLinesMainNode = getRelationsLinesFromNode(
         mainNode,
         nodesToConsider,
       );
 
-      setLines([...lines, ...relationLinesMainNode]);
+      const linesToConsider = relationLinesMainNode.filter(newLine => {
+        return !lines.some(line => {
+          return (
+            line.from.id === newLine.from.id && line.to.id === newLine.to.id
+          );
+        });
+      });
+
+      setLines([...lines, ...linesToConsider]);
     }
   }, [nodes]);
 
@@ -107,7 +135,11 @@ export const useNodes = () => {
   }
 
   function getMainNodePosition() {
-    const me = graphData.find(({idHash}) => idHash === user.idHash);
+    if (nodes.some(({idHash}) => idHash === hash)) {
+      return nodes.find(({idHash}) => idHash === hash);
+    }
+
+    const me = graphData.find(({idHash}) => idHash === hash);
 
     const node = {
       ...me,
@@ -124,7 +156,9 @@ export const useNodes = () => {
     // const siblingsNodes = getSiblingsNode(node);
 
     const familiarNodes: Node[] = [];
-    familiarNodes.push(mainNode);
+    if (!nodes.map(({idHash}) => idHash).includes(hash)) {
+      familiarNodes.push(mainNode);
+    }
     // partnerNode && familiarNodes.push(partnerNode);
     parentsNodes.length && familiarNodes.push(...parentsNodes);
     childrenNodes.length && familiarNodes.push(...childrenNodes);
@@ -152,7 +186,11 @@ export const useNodes = () => {
   function getParentsNode(node: Node) {
     const parents = findParentsNodes(node);
 
-    const parentsWithPosition = parents.map(parent => {
+    const parentsNotAdded = parents.filter(
+      parent => !nodes.some(({idHash}) => idHash === parent.idHash),
+    );
+
+    const parentsWithPosition = parentsNotAdded.map(parent => {
       const gendersPosition = {
         M: node.x - ITEM_SIZE / 2,
         F: node.x + ITEM_SIZE / 2,
@@ -177,7 +215,12 @@ export const useNodes = () => {
   }
 
   function getChildrenNode(node: Node) {
-    const children = findChildrenNodes(node);
+    const allChildren = findChildrenNodes(node);
+
+    const children = allChildren.filter(
+      child => !nodes.some(({idHash}) => idHash === child.idHash),
+    );
+
     const especificChildrenXPosition = isOdd(children.length)
       ? ITEM_SIZE * (children.length - 1)
       : (children.length - 1) * ITEM_SIZE;
@@ -210,17 +253,35 @@ export const useNodes = () => {
   }
 
   function getRelationsLinesFromNode(node: Node, familiars: Node[]) {
-    const familiarsLines = familiars.map(familiar => ({
-      from: {
-        x: node.x,
-        y: node.y,
-      },
-      to: {
-        x: familiar.x,
-        y: familiar.y,
-      },
-    }));
-    console.log({familiarsLines});
+    console.log({familiars});
+
+    const familiarsLines = familiars.map(familiar => {
+      console.log(`familiar ${familiar.idHash}: `, {
+        from: {
+          x: node.x,
+          y: node.y,
+          id: node.idHash,
+        },
+        to: {
+          x: familiar.x,
+          y: familiar.y,
+          id: familiar.idHash,
+        },
+      });
+
+      return {
+        from: {
+          x: node.x,
+          y: node.y,
+          id: node.idHash,
+        },
+        to: {
+          x: familiar.x,
+          y: familiar.y,
+          id: familiar.idHash,
+        },
+      };
+    });
     return familiarsLines;
   }
 

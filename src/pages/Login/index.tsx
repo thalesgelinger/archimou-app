@@ -5,7 +5,7 @@ import {Button} from '../../components';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {Storage} from '../../services/Storage';
 import {api} from '../../services/api';
-import auth, {FirebaseAuthTypes} from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import {useUserActions} from '../../hooks/useUserActions';
 import {useTreeActions} from '../../hooks/useTreeActions';
 
@@ -15,16 +15,24 @@ export const Login = () => {
   const {setIsLoading} = useTreeActions();
 
   useEffect(() => {
-    console.log('REAUTH');
     reAuth();
   }, []);
 
   const reAuth = async () => {
     try {
       setIsLoading(true);
-      const credential = await Storage.getStorageItem('credential');
-      if (!!credential) {
-        await authorize(JSON.parse(credential));
+      const {idToken, provider} = await Storage.getStorageItem(
+        'TOKEN_AND_PROVIDER',
+      );
+
+      const mapProvidersCalls = {
+        google,
+      };
+
+      console.log({idToken, provider});
+
+      if (!!idToken) {
+        mapProvidersCalls[provider](idToken);
       }
     } catch (e) {
       console.error(e);
@@ -33,27 +41,27 @@ export const Login = () => {
     }
   };
 
-  const authorize = async (credential: FirebaseAuthTypes.AuthCredential) => {
-    const response = await auth().signInWithCredential(credential);
-    const token = await response.user.getIdToken(true);
-    console.log({token});
-    await Storage.setStorageItem('token', token);
-    await handleUserToken(token);
+  const google = async (idToken: string) => {
+    try {
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const response = await auth().signInWithCredential(googleCredential);
+      const token = await response.user.getIdToken(true);
+      console.log({token});
+      await handleUserToken(token);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const googleSignIn = async () => {
     try {
       setIsLoading(true);
       const {idToken} = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      await Storage.setStorageItem(
-        'credential',
-        JSON.stringify(googleCredential),
-      );
-      const response = await auth().signInWithCredential(googleCredential);
-      const token = await response.user.getIdToken(true);
-      await Storage.setStorageItem('token', token);
-      await handleUserToken(token);
+      await Storage.setStorageItem('TOKEN_AND_PROVIDER', {
+        idToken,
+        provider: 'google',
+      });
+      await google(idToken);
       setIsLoading(false);
     } catch (e) {
       console.error(e);
@@ -65,7 +73,6 @@ export const Login = () => {
       const {data: user} = await api.get('/findMe', {
         headers: {Authorization: 'Bearer ' + token},
       });
-      await Storage.setStorageItem('user', user);
       saveIdToken(token);
       saveUser(user);
     } catch ({response: error}) {
@@ -73,7 +80,6 @@ export const Login = () => {
         saveIdToken(token);
         setIsLoading(false);
       }
-      console.log('AQUI');
       console.error({error});
     }
   }
