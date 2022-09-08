@@ -7,7 +7,7 @@ export class Storage {
     try {
       await AsyncStorage.setItem(key, JSON.stringify(value));
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   }
 
@@ -16,7 +16,7 @@ export class Storage {
       const item: string | null = await AsyncStorage.getItem(key);
       return (!!item ? JSON.parse(item) : null) as T;
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   }
 }

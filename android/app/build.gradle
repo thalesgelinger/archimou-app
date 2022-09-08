@@ -136,8 +136,8 @@ android {
         applicationId "com.archimou.app.social.tree"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
     }
     splits {
         abi {
@@ -208,8 +208,11 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
-    compile project(':@react-native-community_cameraroll')
-
+    implementation project(':@react-native-community_cameraroll')
+ 
+    implementation"com.squareup.okhttp3:okhttp:4.9.0"
+    implementation "io.grpc:grpc-okhttp:1.32.2"
+    
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }

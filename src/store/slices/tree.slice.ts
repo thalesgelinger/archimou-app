@@ -101,7 +101,7 @@ export const fetchGraphArray = createAsyncThunk(
       return graphDataWithMappedParents;
     } catch ({response: error}) {
       thunkApi.dispatch(userActions.backToLogin());
-      console.error({error});
+      console.warn({error});
     }
   },
 );

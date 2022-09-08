@@ -61,7 +61,7 @@ export const Register = ({navigation, route}: Props) => {
       console.log({uri});
       setImage({uri});
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   };
 
@@ -88,7 +88,7 @@ export const Register = ({navigation, route}: Props) => {
       saveUser(user);
       return true;
     } catch ({response: error}) {
-      console.error(error);
+      console.warn(error);
       return false;
     }
   };
@@ -117,7 +117,7 @@ export const Register = ({navigation, route}: Props) => {
       );
       navigation?.navigate('Home');
     } catch ({response: error}) {
-      console.error(error);
+      console.warn(error);
     }
   };
 

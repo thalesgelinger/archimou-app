@@ -35,6 +35,8 @@ export const Routes = () => {
     const user = await Storage.getStorageItem('user');
     const token = await Storage.getStorageItem('token');
 
+    console.log({user, token});
+
     if (user) {
       saveUser(user);
       saveIdToken(token);

@@ -35,7 +35,7 @@ export const Login = () => {
         mapProvidersCalls[provider](idToken);
       }
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +49,7 @@ export const Login = () => {
       console.log({token});
       await handleUserToken(token);
     } catch (e) {
-      console.error(e);
+      console.warn(e);
     }
   };
 
@@ -57,6 +57,7 @@ export const Login = () => {
     try {
       setIsLoading(true);
       const {idToken} = await GoogleSignin.signIn();
+
       await Storage.setStorageItem('TOKEN_AND_PROVIDER', {
         idToken,
         provider: 'google',
@@ -64,7 +65,7 @@ export const Login = () => {
       await google(idToken);
       setIsLoading(false);
     } catch (e) {
-      console.error(e);
+      console.warn({...e});
     }
   };
 
@@ -80,7 +81,7 @@ export const Login = () => {
         saveIdToken(token);
         setIsLoading(false);
       }
-      console.error({error});
+      console.warn({error});
     }
   }
 
